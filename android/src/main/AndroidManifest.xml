@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      Required for Play Billing. Manifest-merged into the host app, so the app
+      itself declares nothing. No `package` attribute: AGP 8 takes it from the
+      `namespace` in build.gradle and errors if both are present.
+    -->
+    <uses-permission android:name="com.android.vending.BILLING" />
+
+</manifest>

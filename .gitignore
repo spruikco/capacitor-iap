@@ -1,0 +1,10 @@
+node_modules/
+dist/.tsbuildinfo
+android/build/
+android/.gradle/
+android/local.properties
+*.iml
+.idea/
+.DS_Store
+ios/.build/
+.swiftpm/

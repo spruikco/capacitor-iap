@@ -1,0 +1,4 @@
+examples/
+server/
+android/build/
+.gradle/

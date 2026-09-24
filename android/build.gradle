@@ -1,0 +1,71 @@
+// Java, not Kotlin, on purpose.
+//
+// The Capacitor 8 Android template puts only AGP on the buildscript classpath
+// (no Kotlin Gradle plugin), so a Kotlin plugin would have to add and pin its
+// own Kotlin toolchain here. That is one more thing that can only fail on the
+// CI machine, and this project has already lost several build cycles to
+// toolchain problems it could not reproduce locally. Play Billing has a
+// perfectly clean Java API, so Kotlin would buy syntax and cost reliability.
+
+ext {
+    playBillingVersion = project.hasProperty('playBillingVersion') ? rootProject.ext.playBillingVersion : '9.1.0'
+    // Matches @capacitor/android's own default so both resolve the same artifact.
+    androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.7.1'
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace "co.spruik.capacitor.iap"
+    compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 36
+    defaultConfig {
+        // Fallbacks match @capacitor/android's own build.gradle exactly (36/24/36,
+        // Java 21). In practice the app's variables.gradle supplies these, so the
+        // fallbacks only apply if that is missing — but a mismatch there is the
+        // kind of thing that surfaces as a confusing manifest-merger error.
+        minSdk project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 24
+        targetSdk project.hasProperty('targetSdkVersion') ? rootProject.ext.targetSdkVersion : 36
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':capacitor-android')
+    // ⚠️ REQUIRED even though this plugin never names AppCompatActivity.
+    // Capacitor's Plugin.getActivity() RETURNS AppCompatActivity, so javac must
+    // be able to load that class to type-check `Activity a = getActivity();`.
+    // Without it the build fails with:
+    //     error: cannot access AppCompatActivity
+    //     class file for androidx.appcompat.app.AppCompatActivity not found
+    // capacitor-android declares it as `implementation`, which is not
+    // transitive, so each plugin needs its own.
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    // ⚠️ Google enforces a MINIMUM Play Billing Library version for new
+    // submissions and raises it roughly annually; an app built against a
+    // version below the current floor is rejected at upload, not at review.
+    // Check the current floor before each submission rather than assuming this
+    // pin is still acceptable.
+    implementation "com.android.billingclient:billing:$playBillingVersion"
+}

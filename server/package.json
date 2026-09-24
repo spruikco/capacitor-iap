@@ -1,0 +1,29 @@
+{
+  "name": "@spruik/capacitor-iap-server",
+  "version": "1.0.0",
+  "description": "Server-side verification for @spruik/capacitor-iap: offline StoreKit 2 JWS verification pinned to Apple's root, and a Play Developer API client for Android purchase tokens. Zero dependencies beyond node:crypto and fetch.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./apple-jws": "./src/apple-jws.ts",
+    "./google-play": "./src/google-play.ts"
+  },
+  "scripts": {
+    "test": "tsx test-apple-jws.mts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "storekit2",
+    "jws",
+    "app-store-server",
+    "play-billing",
+    "play-developer-api",
+    "in-app-purchase",
+    "receipt-validation"
+  ],
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

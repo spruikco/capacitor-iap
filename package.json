@@ -1,0 +1,38 @@
+{
+  "name": "@spruik/capacitor-iap",
+  "version": "1.0.0",
+  "description": "In-app purchases for Capacitor 8: StoreKit 2 on iOS, Play Billing on Android, behind one JS interface. Consumables and subscriptions. The client is never trusted — every purchase is verified server-side before the transaction is finished.",
+  "license": "MIT",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "android/src/main/",
+    "android/build.gradle",
+    "dist/",
+    "ios/Sources",
+    "Package.swift"
+  ],
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native",
+    "in-app-purchase",
+    "storekit",
+    "play-billing"
+  ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  },
+  "devDependencies": {
+    "@capacitor/core": "^8.4.0"
+  },
+  "peerDependencies": {
+    "@capacitor/core": ">=8.0.0"
+  }
+}
