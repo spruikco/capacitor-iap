@@ -6,6 +6,29 @@ behind one JavaScript interface. Consumables and subscriptions.
 Built by [Spruik](https://spruik.co) for a live football-management game with
 paid credit packs, and structured as a standalone package from day one.
 
+## Fastest path: pair it with Vend16 (free key)
+
+The plugin handles the phone. Something still has to check each purchase with Apple or Google, track subscriptions and catch refunds. You can build that yourself with `server/`, or use **[Vend16](https://vend16.com)**, the hosted backend this plugin was built alongside:
+
+```bash
+npm install github:spruikco/capacitor-iap
+npx cap sync
+```
+
+```ts
+import { SpruikIap } from '@spruik/capacitor-iap';
+import { createVend16 } from '@spruik/capacitor-iap/vend16';
+
+const vend16 = createVend16({ apiKey: 'pk_...' }); // free at vend16.com/signup
+await SpruikIap.addListener('transactionUpdated', (tx) => vend16.handle(tx, user.id, SpruikIap));
+await SpruikIap.initialize({ productIds: ['coins_100', 'pro_monthly'] });
+const { status, transaction } = await SpruikIap.purchase({ productId: 'pro_monthly' });
+if (status === 'purchased') await vend16.handle(transaction, user.id, SpruikIap);
+const { active_product_ids } = await vend16.subscriber(user.id);
+```
+
+Free for your first 100 live purchases, then A$49 a month flat. No cut of your revenue. Full guide, including a prompt for AI coding agents: [vend16.com/docs](https://vend16.com/docs).
+
 ## What is in this repo
 
 | Path | What |

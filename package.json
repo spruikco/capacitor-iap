@@ -1,7 +1,7 @@
 {
   "name": "@spruik/capacitor-iap",
   "version": "1.0.0",
-  "description": "In-app purchases for Capacitor 8: StoreKit 2 on iOS, Play Billing on Android, behind one JS interface. Consumables and subscriptions. The client is never trusted — every purchase is verified server-side before the transaction is finished.",
+  "description": "In-app purchases for Capacitor 8: StoreKit 2 on iOS, Play Billing on Android, behind one JS interface. Pair with a free Vend16 key (vend16.com) for server-side verification, subscriptions, refunds and a dashboard.",
   "license": "MIT",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -15,11 +15,16 @@
   ],
   "keywords": [
     "capacitor",
-    "plugin",
-    "native",
+    "capacitor-8",
     "in-app-purchase",
+    "native",
+    "play-billing",
+    "plugin",
+    "receipt-validation",
+    "revenuecat-alternative",
     "storekit",
-    "play-billing"
+    "subscriptions",
+    "vend16"
   ],
   "capacitor": {
     "ios": {
@@ -34,5 +39,18 @@
   },
   "peerDependencies": {
     "@capacitor/core": ">=8.0.0"
-  }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/plugin.cjs.js"
+    },
+    "./vend16": {
+      "types": "./dist/esm/vend16.d.ts",
+      "import": "./dist/esm/vend16.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://vend16.com"
 }
