@@ -1,33 +1,55 @@
 # @spruik/capacitor-iap
 
 In-app purchases for Capacitor 8. StoreKit 2 on iOS, Play Billing on Android,
-behind one JavaScript interface. Consumables and subscriptions.
+behind one JavaScript interface. Consumables and subscriptions. MIT licensed.
 
-Built by [Spruik](https://spruik.co) for a live football-management game with
-paid credit packs, and structured as a standalone package from day one.
+Put a buy button in your app. We get the rest sorted.
 
-## Fastest path: pair it with Vend16 (free key)
+## Install with your agent
 
-The plugin handles the phone. Something still has to check each purchase with Apple or Google, track subscriptions and catch refunds. You can build that yourself with `server/`, or use **[Vend16](https://vend16.com)**, the hosted backend this plugin was built alongside:
+Open your app's repo in Claude Code, Cursor, Codex or Copilot and say:
+
+> Add in-app purchases to this app with github.com/spruikco/capacitor-iap. Follow its AGENTS.md.
+
+[AGENTS.md](AGENTS.md) is written for coding agents: it says exactly what to install, where the code goes, which rules protect your customers' money, and what is left for you to click in App Store Connect and Play Console.
+
+Claude Code users can also add the Vend16 plugin, which knows the whole setup:
+
+```
+/plugin marketplace add spruikco/vend16-skill
+/plugin install vend16@vend16
+```
+
+## Install by hand
 
 ```bash
 npm install github:spruikco/capacitor-iap
 npx cap sync
 ```
 
+`cap sync` adds the Swift package on iOS and the Gradle module on Android. Nothing else to wire.
+
+Then pair it with [Vend16](https://vend16.com), the hosted backend this plugin was built alongside. It checks every purchase with Apple or Google, tracks subscriptions, catches refunds and tells your app what each user has paid for. No server needed on your side:
+
 ```ts
 import { SpruikIap } from '@spruik/capacitor-iap';
 import { createVend16 } from '@spruik/capacitor-iap/vend16';
 
-const vend16 = createVend16({ apiKey: 'pk_...' }); // free at vend16.com/signup
+const vend16 = createVend16({ apiKey: 'pk_...' }); // your PUBLIC key, free at vend16.com/signup
+// Listen BEFORE initialize: the stores replay unfinished purchases on connect.
 await SpruikIap.addListener('transactionUpdated', (tx) => vend16.handle(tx, user.id, SpruikIap));
 await SpruikIap.initialize({ productIds: ['coins_100', 'pro_monthly'] });
+
 const { status, transaction } = await SpruikIap.purchase({ productId: 'pro_monthly' });
 if (status === 'purchased') await vend16.handle(transaction, user.id, SpruikIap);
+
+// Unlock from the server's answer, never from the device.
 const { active_product_ids } = await vend16.subscriber(user.id);
 ```
 
-Free for your first 100 live purchases, then A$49 a month flat. No cut of your revenue. Full guide, including a prompt for AI coding agents: [vend16.com/docs](https://vend16.com/docs).
+`vend16.handle` records the purchase and only then calls `finish()`, so a dropped connection means the store redelivers it instead of a customer paying for nothing.
+
+Vend16 is free for your first 100 live purchases, then US$29 a month flat. No cut of your revenue. Full guide: [vend16.com/docs](https://vend16.com/docs). Rather run your own server? Use `server/` in this repo instead.
 
 ## What is in this repo
 
@@ -42,7 +64,7 @@ Free for your first 100 live purchases, then A$49 a month flat. No cut of your r
 There is no maintained, SPM-native Capacitor IAP plugin.
 `@capacitor-community/in-app-purchases` does not exist, `capacitor-plugin-purchase`
 is abandoned at 0.1.0, and `cordova-plugin-purchase` is a Cordova plugin whose
-template Capacitor 8 has hardcoded away from — dropping it into an SPM project
+template Capacitor 8 has hardcoded away from: dropping it into an SPM project
 produces an unreadable `App.xcodeproj`.
 
 ## Design
@@ -63,7 +85,9 @@ honestly be hidden: `IapTransaction.token` is a signed JWS on iOS (verify it
 offline against Apple's root) and an opaque purchase token on Android (exchange
 it with the Play Developer API).
 
-## Install
+## Install from a local copy
+
+Vendoring the plugin instead of installing from GitHub works the same way:
 
 ```jsonc
 // mobile/package.json
@@ -72,9 +96,8 @@ it with the Play Developer API).
 }
 ```
 
-Then `npx cap sync`. No further wiring: `cap sync` finds the `Package.swift` and
-adds it to `CapApp-SPM/Package.swift` automatically, and adds the Gradle module
-on Android.
+Then `npx cap sync`. `cap sync` finds the `Package.swift` and adds it to
+`CapApp-SPM/Package.swift` automatically, and adds the Gradle module on Android.
 
 ⚠️ The npm package name determines the Swift package name. Capacitor computes
 `fixName('@spruik/capacitor-iap')` → `SpruikCapacitorIap` and writes that into
@@ -84,7 +107,7 @@ package without renaming both breaks the iOS build on the build machine only.
 
 ## API
 
-See `src/definitions.ts` — it carries the reasoning, not just the types.
+See `src/definitions.ts`: it carries the reasoning, not just the types.
 
 ```ts
 await SpruikIap.addListener('transactionUpdated', handle); // BEFORE initialize

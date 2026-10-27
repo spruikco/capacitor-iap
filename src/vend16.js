@@ -3,7 +3,7 @@
 // With @spruik/capacitor-iap:
 //
 //   import { SpruikIap } from '@spruik/capacitor-iap';
-//   import { createVend16 } from './vend16-client.js';
+//   import { createVend16 } from '@spruik/capacitor-iap/vend16';
 //
 //   const vend16 = createVend16({ apiKey: 'pk_...' });
 //   const userId = currentUser.id;
